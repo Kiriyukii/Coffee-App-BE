@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Activation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+      }
+      .email-header {
+        text-align: center;
+        padding-bottom: 20px;
+      }
+      .email-header h1 {
+        margin: 0;
+        font-size: 24px;
+        color: #333333;
+      }
+      .email-content {
+        text-align: center;
+        padding: 20px;
+        line-height: 1.6;
+        color: #555555;
+      }
+      .activation-code {
+        font-size: 28px;
+        color: #2d9cdb;
+        font-weight: bold;
+        padding: 20px 0;
+      }
+      .email-footer {
+        text-align: center;
+        font-size: 12px;
+        color: #aaaaaa;
+        padding-top: 20px;
+      }
+      .email-footer a {
+        color: #2d9cdb;
+        text-decoration: none;
+      }
+      @media only screen and (max-width: 600px) {
+        .email-container {
+          width: 100%;
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td>
+          <div class="email-container">
+            <div class="email-header">
+              <h1>Activate Your Account</h1>
+            </div>
+            <div class="email-content">
+              <p>Hello <%= user.name%></p>
+              <p>
+                Thank you for registering! Please use the activation code below
+                to activate your account:
+              </p>
+              <h2><%=activationCode %></h2>
+              <p>
+                If you did not sign up for this account, you can safely ignore
+                this email.
+              </p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
