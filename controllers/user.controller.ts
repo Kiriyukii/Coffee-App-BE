@@ -40,6 +40,7 @@ export const registrationUser = CatchAsyncError(
 
       const activationCode = activationToken.activationCode;
       const data = { user: { name: user.name }, activationCode };
+      console.log(activationToken);
       const html = await ejs.renderFile(
         path.join(__dirname, '../mails/activation-mail.ejs'),
         data
@@ -178,12 +179,12 @@ export const logoutUser = CatchAsyncError(
 export const updateAccessToken = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const refresh_token = req.headers['refresh-token'] as string;
+      const refresh_token = req.cookies.refresh_token as string;
       const decoded = jwt.verify(
         refresh_token,
         process.env.REFRESH_TOKEN as string
       ) as JwtPayload;
-      const message = 'Could not refresh token';
+      const message = 'Couldn not refresh token';
       if (!decoded) {
         return next(new ErrorHandler(message, 400));
       }
