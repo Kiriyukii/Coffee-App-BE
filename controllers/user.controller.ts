@@ -184,7 +184,7 @@ export const updateAccessToken = CatchAsyncError(
         refresh_token,
         process.env.REFRESH_TOKEN as string
       ) as JwtPayload;
-      const message = 'Couldn not refresh token';
+      const message = 'Could not refresh token';
       if (!decoded) {
         return next(new ErrorHandler(message, 400));
       }
