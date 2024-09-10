@@ -46,14 +46,18 @@ export const editCoffee = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
+      const coffeeId = req.params.id;
+      const existingCoffee = (await CoffeeModel.findById(coffeeId)) as any;
       const imagelink_portrait = data.imagelink_portrait;
       const imagelink_square = data.imagelink_square;
-      if (imagelink_portrait) {
-        await cloudinary.v2.uploader.destroy(imagelink_portrait.public_id);
+      if (imagelink_portrait && existingCoffee?.imagelink_portrait?.public_id) {
+        await cloudinary.v2.uploader.destroy(
+          existingCoffee.imagelink_portrait.public_id
+        );
         const myCloud = await cloudinary.v2.uploader.upload(
           imagelink_portrait,
           {
-            folder: 'coffee',
+            folder: 'coffees',
           }
         );
 
@@ -62,10 +66,12 @@ export const editCoffee = CatchAsyncError(
           url: myCloud.secure_url,
         };
       }
-      if (imagelink_square) {
-        await cloudinary.v2.uploader.destroy(imagelink_portrait.public_id);
+      if (imagelink_square && existingCoffee?.imagelink_square?.public_id) {
+        await cloudinary.v2.uploader.destroy(
+          existingCoffee.imagelink_square.public_id
+        );
         const myCloud = await cloudinary.v2.uploader.upload(imagelink_square, {
-          folder: 'coffee',
+          folder: 'coffees',
         });
 
         data.imagelink_square = {
@@ -73,8 +79,6 @@ export const editCoffee = CatchAsyncError(
           url: myCloud.secure_url,
         };
       }
-
-      const coffeeId = req.params.id;
 
       const coffee = await CoffeeModel.findByIdAndUpdate(
         coffeeId,

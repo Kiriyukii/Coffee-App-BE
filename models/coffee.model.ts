@@ -13,6 +13,7 @@ interface ICoffee extends Document {
   average_rating: number;
   ratings_count: string;
   favorites: boolean;
+  type: string;
 }
 
 const coffeeSchema = new Schema<ICoffee>({
@@ -72,6 +73,10 @@ const coffeeSchema = new Schema<ICoffee>({
   favorites: {
     type: Boolean,
     default: false,
+  },
+  type: {
+    type: String,
+    required: true,
   },
 });
 

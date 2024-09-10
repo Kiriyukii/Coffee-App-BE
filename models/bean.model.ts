@@ -12,6 +12,7 @@ interface IBean extends Document {
   average_rating: number;
   ratings_count: string;
   favorites: boolean;
+  type: string;
 }
 
 const beanSchema = new Schema<IBean>({
@@ -67,6 +68,10 @@ const beanSchema = new Schema<IBean>({
   favorites: {
     type: Boolean,
     default: false,
+  },
+  type: {
+    type: String,
+    required: true,
   },
 });
 

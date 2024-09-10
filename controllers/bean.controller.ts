@@ -16,7 +16,7 @@ export const uploadBean = CatchAsyncError(
         const myCloud = await cloudinary.v2.uploader.upload(
           imagelink_portrait,
           {
-            folder: 'bean',
+            folder: 'beans',
           }
         );
 
@@ -27,7 +27,7 @@ export const uploadBean = CatchAsyncError(
       }
       if (imagelink_square) {
         const myCloud = await cloudinary.v2.uploader.upload(imagelink_square, {
-          folder: 'bean',
+          folder: 'beans',
         });
 
         data.imagelink_square = {
@@ -47,14 +47,19 @@ export const editBean = CatchAsyncError(
     try {
       const data = req.body;
       const beanId = req.params.id;
+      const existingBean = (await BeanModel.findById(beanId)) as any;
+      console.log(existingBean);
+      console.log(existingBean.imagelink_portrait.public_id.type);
       const imagelink_portrait = data.imagelink_portrait;
       const imagelink_square = data.imagelink_square;
-      if (imagelink_portrait) {
-        await cloudinary.v2.uploader.destroy(imagelink_portrait?.public_id);
+      if (imagelink_portrait && existingBean?.imagelink_portrait?.public_id) {
+        await cloudinary.v2.uploader.destroy(
+          existingBean.imagelink_portrait.url
+        );
         const myCloud = await cloudinary.v2.uploader.upload(
           imagelink_portrait,
           {
-            folder: 'bean',
+            folder: 'beans',
           }
         );
 
@@ -63,10 +68,12 @@ export const editBean = CatchAsyncError(
           url: myCloud.secure_url,
         };
       }
-      if (imagelink_square) {
-        await cloudinary.v2.uploader.destroy(imagelink_portrait?.public_id);
+      if (imagelink_square && existingBean?.imagelink_square?.public_id) {
+        await cloudinary.v2.uploader.destroy(
+          existingBean.imagelink_square.public_id
+        );
         const myCloud = await cloudinary.v2.uploader.upload(imagelink_square, {
-          folder: 'bean',
+          folder: 'beans',
         });
 
         data.imagelink_square = {
