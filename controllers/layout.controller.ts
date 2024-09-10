@@ -42,20 +42,6 @@ export const createLayout = CatchAsyncError(
           categories: categoriesItems,
         });
       }
-      if (type === 'CoffeeType') {
-        const { ctype } = req.body;
-        const cTypeItems = await Promise.all(
-          ctype.map(async (item: any) => {
-            return {
-              title: item.title,
-            };
-          })
-        );
-        await LayoutModel.create({
-          type: 'CoffeeType',
-          ctype: cTypeItems,
-        });
-      }
       res.status(200).json({
         success: true,
         message: 'Layout created successfully',
@@ -108,20 +94,6 @@ export const editLayout = CatchAsyncError(
         );
         await LayoutModel.findByIdAndUpdate(categoriesData?.id, {
           categories: categoriesItems,
-        });
-      }
-      if (type === 'CoffeeType') {
-        const { ctype } = req.body;
-        const ctypeData = await LayoutModel.findOne({ type: 'CoffeeType' });
-        const cTypeItems = await Promise.all(
-          ctype.map(async (item: any) => {
-            return {
-              title: item.title,
-            };
-          })
-        );
-        await LayoutModel.findByIdAndUpdate(ctypeData?.id, {
-          ctype: cTypeItems,
         });
       }
       res.status(200).json({

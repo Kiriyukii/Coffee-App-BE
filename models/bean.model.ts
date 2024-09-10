@@ -1,10 +1,9 @@
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
-interface ICoffee extends Document {
+interface IBean extends Document {
   name: string;
   description: string;
   roasted: string;
-  categories: string;
   imagelink_square: object;
   imagelink_portrait: object;
   ingredients: string;
@@ -15,7 +14,7 @@ interface ICoffee extends Document {
   favorites: boolean;
 }
 
-const coffeeSchema = new Schema<ICoffee>({
+const beanSchema = new Schema<IBean>({
   name: {
     type: String,
     required: true,
@@ -25,10 +24,6 @@ const coffeeSchema = new Schema<ICoffee>({
     required: true,
   },
   roasted: {
-    type: String,
-    required: true,
-  },
-  categories: {
     type: String,
     required: true,
   },
@@ -75,6 +70,6 @@ const coffeeSchema = new Schema<ICoffee>({
   },
 });
 
-const CoffeeModel: Model<ICoffee> = mongoose.model('coffee', coffeeSchema);
+const BeanModel: Model<IBean> = mongoose.model('bean', beanSchema);
 
-export default CoffeeModel;
+export default BeanModel;

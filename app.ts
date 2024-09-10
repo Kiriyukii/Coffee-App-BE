@@ -7,6 +7,7 @@ import { ErrorMiddleware } from './middleware/error';
 import userRouter from './routes/user.route';
 import coffeeRouter from './routes/coffee.route';
 import layoutRouter from './routes/layout.route';
+import beanRouter from './routes/bean.route';
 
 // body parser
 app.use(express.json({ limit: '50mb' }));
@@ -24,6 +25,7 @@ app.use(
 app.use('/api/v1', userRouter);
 app.use('/api/v1', coffeeRouter);
 app.use('/api/v1', layoutRouter);
+app.use('/api/v1', beanRouter);
 
 // testing api
 app.get('/test', (req: Request, res: Response, next: NextFunction) => {

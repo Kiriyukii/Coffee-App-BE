@@ -317,9 +317,6 @@ export const updatePassword = CatchAsyncError(
 );
 
 //update avatar
-interface IUpdateProfilePicture {
-  avatar: string;
-}
 
 export const updateProfilePicture = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {

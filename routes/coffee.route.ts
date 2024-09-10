@@ -16,7 +16,7 @@ coffeeRouter.post(
   uploadCoffee
 );
 
-coffeeRouter.post(
+coffeeRouter.put(
   '/edit-coffee/:id',
   isAuthenticated,
   authorizeRoles('admin'),

@@ -9,10 +9,6 @@ export interface BannerImage extends Document {
   url: string;
 }
 
-export interface CoffeeType extends Document {
-  title: string;
-}
-
 interface Layout extends Document {
   type: string;
   categories: Category[];
@@ -21,7 +17,6 @@ interface Layout extends Document {
     title: string;
     subTitle: string;
   };
-  ctype: CoffeeType[];
 }
 
 const categorySchema = new Schema<Category>({
@@ -31,10 +26,6 @@ const bannerImageSchema = new Schema<BannerImage>({
   public_id: { type: String },
   url: { type: String },
 });
-const coffeeTypeSchema = new Schema<CoffeeType>({
-  title: { type: String },
-});
-
 const layoutSchema = new Schema<Layout>({
   type: { type: String },
   categories: [categorySchema],
@@ -43,7 +34,6 @@ const layoutSchema = new Schema<Layout>({
     title: { type: String },
     subTitle: { type: String },
   },
-  ctype: [coffeeTypeSchema],
 });
 
 const LayoutModel = model<Layout>('Layout', layoutSchema);
