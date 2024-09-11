@@ -152,3 +152,27 @@ export const getAllCoffee = CatchAsyncError(
     }
   }
 );
+
+export const patchCoffeeStatus = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.body;
+      const coffeeId = req.params.id;
+      const existingCoffee = await CoffeeModel.findById(coffeeId);
+      if (!existingCoffee) {
+        return next(new ErrorHandler('Coffee not found', 404));
+      }
+      const coffee = await CoffeeModel.findByIdAndUpdate(
+        coffeeId,
+        { $set: data },
+        { new: true }
+      );
+      res.status(201).json({
+        success: true,
+        coffee,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);

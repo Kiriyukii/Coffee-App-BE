@@ -149,3 +149,27 @@ export const getAllBean = CatchAsyncError(
     }
   }
 );
+
+export const patchBeanStatus = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.body;
+      const beanId = req.params.id;
+      const existingBean = await BeanModel.findById(beanId);
+      if (!existingBean) {
+        return next(new ErrorHandler('Bean not found', 404));
+      }
+      const coffee = await BeanModel.findByIdAndUpdate(
+        beanId,
+        { $set: data },
+        { new: true }
+      );
+      res.status(201).json({
+        success: true,
+        coffee,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);

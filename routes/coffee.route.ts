@@ -3,6 +3,7 @@ import {
   editCoffee,
   getAllCoffee,
   getCoffeeById,
+  patchCoffeeStatus,
   uploadCoffee,
 } from '../controllers/coffee.controller';
 import { authorizeRoles, isAuthenticated } from '../middleware/auth';
@@ -25,5 +26,6 @@ coffeeRouter.put(
 
 coffeeRouter.get('/get-coffee/:id', getCoffeeById);
 coffeeRouter.get('/get-coffees', getAllCoffee);
+coffeeRouter.patch('/patch-coffee/:id', isAuthenticated, patchCoffeeStatus);
 
 export default coffeeRouter;

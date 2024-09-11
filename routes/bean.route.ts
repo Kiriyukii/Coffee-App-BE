@@ -5,6 +5,7 @@ import {
   editBean,
   getAllBean,
   getBeanById,
+  patchBeanStatus,
   uploadBean,
 } from '../controllers/bean.controller';
 
@@ -26,5 +27,6 @@ beanRouter.put(
 
 beanRouter.get('/get-bean/:id', getBeanById);
 beanRouter.get('/get-beans', getAllBean);
+beanRouter.patch('/patch-bean/:id', isAuthenticated, patchBeanStatus);
 
 export default beanRouter;
