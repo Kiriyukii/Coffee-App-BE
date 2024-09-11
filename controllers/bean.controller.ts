@@ -10,31 +10,37 @@ export const uploadBean = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      const imagelink_portrait = data.imagelink_portrait;
-      const imagelink_square = data.imagelink_square;
-      if (imagelink_portrait) {
-        const myCloud = await cloudinary.v2.uploader.upload(
-          imagelink_portrait,
-          {
-            folder: 'beans',
-          }
+      const uploadPromises = [];
+      if (data.imagelink_portrait) {
+        uploadPromises.push(
+          cloudinary.v2.uploader
+            .upload(data.imagelink_portrait, {
+              folder: 'beans',
+            })
+            .then((myCloud) => {
+              data.imagelink_portrait = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+              };
+            })
         );
-
-        data.imagelink_portrait = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
       }
-      if (imagelink_square) {
-        const myCloud = await cloudinary.v2.uploader.upload(imagelink_square, {
-          folder: 'beans',
-        });
 
-        data.imagelink_square = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
+      if (data.imagelink_square) {
+        uploadPromises.push(
+          cloudinary.v2.uploader
+            .upload(data.imagelink_square, {
+              folder: 'beans',
+            })
+            .then((myCloud) => {
+              data.imagelink_square = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+              };
+            })
+        );
       }
+      await Promise.all(uploadPromises);
       createBean(data, res, next);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -48,39 +54,45 @@ export const editBean = CatchAsyncError(
       const data = req.body;
       const beanId = req.params.id;
       const existingBean = (await BeanModel.findById(beanId)) as any;
-      console.log(existingBean);
-      console.log(existingBean.imagelink_portrait.public_id.type);
-      const imagelink_portrait = data.imagelink_portrait;
-      const imagelink_square = data.imagelink_square;
-      if (imagelink_portrait && existingBean?.imagelink_portrait?.public_id) {
-        await cloudinary.v2.uploader.destroy(
-          existingBean.imagelink_portrait.url
+      const uploadPromises = [];
+      if (
+        data.imagelink_portrait &&
+        existingBean?.imagelink_portrait?.public_id
+      ) {
+        uploadPromises.push(
+          (async () => {
+            await cloudinary.v2.uploader.destroy(
+              existingBean.imagelink_portrait.public_id
+            );
+            const myCloud = await cloudinary.v2.uploader.upload(
+              data.imagelink_portrait,
+              { folder: 'coffees' }
+            );
+            data.imagelink_portrait = {
+              public_id: myCloud.public_id,
+              url: myCloud.secure_url,
+            };
+          })()
         );
-        const myCloud = await cloudinary.v2.uploader.upload(
-          imagelink_portrait,
-          {
-            folder: 'beans',
-          }
-        );
-
-        data.imagelink_portrait = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
       }
-      if (imagelink_square && existingBean?.imagelink_square?.public_id) {
-        await cloudinary.v2.uploader.destroy(
-          existingBean.imagelink_square.public_id
+      if (data.imagelink_square && existingBean?.imagelink_square?.public_id) {
+        uploadPromises.push(
+          (async () => {
+            await cloudinary.v2.uploader.destroy(
+              existingBean.imagelink_square.public_id
+            );
+            const myCloud = await cloudinary.v2.uploader.upload(
+              data.imagelink_square,
+              { folder: 'coffees' }
+            );
+            data.imagelink_square = {
+              public_id: myCloud.public_id,
+              url: myCloud.secure_url,
+            };
+          })()
         );
-        const myCloud = await cloudinary.v2.uploader.upload(imagelink_square, {
-          folder: 'beans',
-        });
-
-        data.imagelink_square = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
       }
+      await Promise.all(uploadPromises);
 
       const bean = await BeanModel.findByIdAndUpdate(
         beanId,

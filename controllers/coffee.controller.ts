@@ -10,31 +10,37 @@ export const uploadCoffee = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      const imagelink_portrait = data.imagelink_portrait;
-      const imagelink_square = data.imagelink_square;
-      if (imagelink_portrait) {
-        const myCloud = await cloudinary.v2.uploader.upload(
-          imagelink_portrait,
-          {
-            folder: 'coffee',
-          }
+      const uploadPromises = [];
+      if (data.imagelink_portrait) {
+        uploadPromises.push(
+          cloudinary.v2.uploader
+            .upload(data.imagelink_portrait, {
+              folder: 'coffees',
+            })
+            .then((myCloud) => {
+              data.imagelink_portrait = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+              };
+            })
         );
-
-        data.imagelink_portrait = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
       }
-      if (imagelink_square) {
-        const myCloud = await cloudinary.v2.uploader.upload(imagelink_square, {
-          folder: 'coffee',
-        });
 
-        data.imagelink_square = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
+      if (data.imagelink_square) {
+        uploadPromises.push(
+          cloudinary.v2.uploader
+            .upload(data.imagelink_square, {
+              folder: 'coffees',
+            })
+            .then((myCloud) => {
+              data.imagelink_square = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+              };
+            })
+        );
       }
+      await Promise.all(uploadPromises);
       createCoffee(data, res, next);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
@@ -48,37 +54,48 @@ export const editCoffee = CatchAsyncError(
       const data = req.body;
       const coffeeId = req.params.id;
       const existingCoffee = (await CoffeeModel.findById(coffeeId)) as any;
-      const imagelink_portrait = data.imagelink_portrait;
-      const imagelink_square = data.imagelink_square;
-      if (imagelink_portrait && existingCoffee?.imagelink_portrait?.public_id) {
-        await cloudinary.v2.uploader.destroy(
-          existingCoffee.imagelink_portrait.public_id
+      const uploadPromises = [];
+      if (
+        data.imagelink_portrait &&
+        existingCoffee?.imagelink_portrait?.public_id
+      ) {
+        uploadPromises.push(
+          (async () => {
+            await cloudinary.v2.uploader.destroy(
+              existingCoffee.imagelink_portrait.public_id
+            );
+            const myCloud = await cloudinary.v2.uploader.upload(
+              data.imagelink_portrait,
+              { folder: 'coffees' }
+            );
+            data.imagelink_portrait = {
+              public_id: myCloud.public_id,
+              url: myCloud.secure_url,
+            };
+          })()
         );
-        const myCloud = await cloudinary.v2.uploader.upload(
-          imagelink_portrait,
-          {
-            folder: 'coffees',
-          }
-        );
-
-        data.imagelink_portrait = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
       }
-      if (imagelink_square && existingCoffee?.imagelink_square?.public_id) {
-        await cloudinary.v2.uploader.destroy(
-          existingCoffee.imagelink_square.public_id
+      if (
+        data.imagelink_square &&
+        existingCoffee?.imagelink_square?.public_id
+      ) {
+        uploadPromises.push(
+          (async () => {
+            await cloudinary.v2.uploader.destroy(
+              existingCoffee.imagelink_square.public_id
+            );
+            const myCloud = await cloudinary.v2.uploader.upload(
+              data.imagelink_square,
+              { folder: 'coffees' }
+            );
+            data.imagelink_square = {
+              public_id: myCloud.public_id,
+              url: myCloud.secure_url,
+            };
+          })()
         );
-        const myCloud = await cloudinary.v2.uploader.upload(imagelink_square, {
-          folder: 'coffees',
-        });
-
-        data.imagelink_square = {
-          public_id: myCloud.public_id,
-          url: myCloud.secure_url,
-        };
       }
+      await Promise.all(uploadPromises);
 
       const coffee = await CoffeeModel.findByIdAndUpdate(
         coffeeId,
