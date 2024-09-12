@@ -149,6 +149,19 @@ export const getAllBean = CatchAsyncError(
     }
   }
 );
+export const getFavoriteBeans = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const favoriteBeans = await BeanModel.find({ favorites: true });
+      res.status(200).json({
+        success: true,
+        beans: favoriteBeans,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
 
 export const patchBeanStatus = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {

@@ -176,3 +176,17 @@ export const patchCoffeeStatus = CatchAsyncError(
     }
   }
 );
+
+export const getFavoriteCoffee = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const favoriteCoffees = await CoffeeModel.find({ favorites: true });
+      res.status(200).json({
+        success: true,
+        coffees: favoriteCoffees,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
