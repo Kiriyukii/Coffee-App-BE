@@ -325,20 +325,24 @@ export const updateProfilePicture = CatchAsyncError(
     try {
       const { avatar } = req.body;
       const userId = req?.user?._id as string;
-      const user = await userModel.findById(userId);
-      if (avatar && user) {
-        if (user?.avatar?.public_id) {
-          await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
-        } else {
-          const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-            folder: 'avatars',
-            width: 150,
-          });
-          user.avatar = {
-            public_id: myCloud.public_id,
-            url: myCloud.secure_url,
-          };
+      const user = (await userModel.findById(userId)) as any;
+      if (!user) {
+        return next(new ErrorHandler('User not found', 404));
+      }
+      if (avatar) {
+        if (user.avatar?.public_id) {
+          await cloudinary.v2.uploader.destroy(user.avatar.public_id);
         }
+
+        const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+          folder: 'avatars',
+          width: 150,
+        });
+
+        user.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
       }
 
       await user?.save();
